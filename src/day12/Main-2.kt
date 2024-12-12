@@ -5,7 +5,7 @@ import java.io.InputStream
 import kotlin.math.abs
 
 fun main(){
-    val inputStream: InputStream = File("src/day12/example3").inputStream()
+    val inputStream: InputStream = File("src/day12/in").inputStream()
     val lineList:MutableList<CharArray> = mutableListOf()
 
     inputStream.bufferedReader().forEachLine { line ->
@@ -19,23 +19,58 @@ fun main(){
 
     lineList.forEachIndexed { index, chars ->
         chars.forEachIndexed { i, c ->
-            if (c != '1' && c == c.uppercaseChar() && c == 'F'){
+            if (c != '1' && c == c.uppercaseChar()){
                 val perimeter = Perimeter(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
                 val areaPerimeter = findNeighboursV2(i, index, c, Pair(0, 0), perimeter, lineList)
 
-                /*var perimeterInt = calcPerimeterHorizontal(perimeter.up, 1)
-                perimeterInt += calcPerimeterHorizontal(perimeter.down, 1)
-                perimeterInt += calcPerimeterVertical(perimeter.left, 1)
-                perimeterInt += calcPerimeterVertical(perimeter.right, 1)*/
+                /*println("PerimeterUp: ${calcPerimeterHorizontal(
+                    perimeter.up.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.first }.thenByDescending { it.second }
+                    ).toMutableList(),
+                    1)}"
+                )
+                println("PerimeterDown: ${calcPerimeterHorizontal(
+                    perimeter.down.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.first }.thenByDescending { it.second }
+                    ).toMutableList(),
+                    1)}"
+                )
+                println("PerimeterLeft: ${calcPerimeterVertical(
+                    perimeter.left.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.second }.thenByDescending { it.first }
+                    ).toMutableList(),
+                    1)}"
+                )
+                println("PerimeterRight: ${calcPerimeterVertical(
+                    perimeter.right.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.second }.thenByDescending { it.first }
+                    ).toMutableList(),
+                    1)}"
+                )*/
 
-                println("PerimeterUp: ${calcPerimeterHorizontal(perimeter.up, 1)}")
-                println("PerimeterDown: ${calcPerimeterHorizontal(perimeter.down, 1)}")
-                //println("PerimeterLeft: ${calcPerimeterVertical(perimeter.left, 1)}")
-                println("PerimeterRight: ${calcPerimeterVertical(perimeter.right, 1)}")
+                var perimeterInt = calcPerimeterHorizontal(
+                    perimeter.up.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.first }.thenByDescending { it.second }
+                    ).toMutableList(),
+                    1)
+                perimeterInt += calcPerimeterHorizontal(
+                    perimeter.down.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.first }.thenByDescending { it.second }
+                    ).toMutableList(),
+                    1)
+                perimeterInt += calcPerimeterVertical(
+                    perimeter.left.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.second }.thenByDescending { it.first }
+                    ).toMutableList(),
+                    1)
+                perimeterInt += calcPerimeterVertical(
+                    perimeter.right.sortedWith(
+                        compareBy<Pair<Int, Int>> { it.second }.thenByDescending { it.first }
+                    ).toMutableList(),
+                    1)
 
-                //println("Symbol:$c Area: ${areaPerimeter.first}, PerimeterInt: $perimeterInt")
-                /*println("Symbol: $c Cost: ${areaPerimeter.first * perimeterInt} Area: ${areaPerimeter.first} Perimeter: $perimeterInt")
-                score += areaPerimeter.first * perimeterInt*/
+                println("Symbol: $c Cost: ${areaPerimeter.first * perimeterInt} Area: ${areaPerimeter.first} Perimeter: $perimeterInt")
+                score += areaPerimeter.first * perimeterInt
             }
         }
     }
@@ -95,11 +130,10 @@ data class Perimeter(
 )
 
 fun calcPerimeterHorizontal(singlePerimeter: MutableList<Pair<Int, Int>>, perimeter: Int): Int{
-    singlePerimeter.sortBy { it.first }
     val i = 1
     while (i < singlePerimeter.size){
         if (singlePerimeter[i].first == singlePerimeter[0].first && abs(singlePerimeter[i].second - singlePerimeter[i - 1].second) == 1){
-            singlePerimeter.removeAt(i)
+            singlePerimeter.removeAt(i - 1)
         } else {
             singlePerimeter.removeAt(i - 1)
             return calcPerimeterHorizontal(singlePerimeter, perimeter + 1)
@@ -110,11 +144,10 @@ fun calcPerimeterHorizontal(singlePerimeter: MutableList<Pair<Int, Int>>, perime
 }
 
 fun calcPerimeterVertical(singlePerimeter: MutableList<Pair<Int, Int>>, perimeter: Int): Int{
-    singlePerimeter.sortBy { it.second }
     val i = 1
     while (i < singlePerimeter.size){
         if (singlePerimeter[i].second == singlePerimeter[0].second && abs(singlePerimeter[i].first - singlePerimeter[i - 1].first) == 1){
-            singlePerimeter.removeAt(i)
+            singlePerimeter.removeAt(i - 1)
         } else {
             singlePerimeter.removeAt(i - 1)
             return calcPerimeterVertical(singlePerimeter, perimeter + 1)
