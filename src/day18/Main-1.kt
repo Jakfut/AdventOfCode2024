@@ -3,6 +3,7 @@ package day18
 import _template.*
 import java.io.File
 import java.io.InputStream
+import java.util.PriorityQueue
 
 const val SIZE_X = 71
 const val SIZE_Y = 71
@@ -18,7 +19,6 @@ fun main(){
 
     val grid:MutableGrid = List(SIZE_X) { index -> List(SIZE_Y){'.'} }.toMutableGrid()
     val corruptedMemory:MutableList<Pair<Int, Int>> = mutableListOf()
-    var score = 0
 
     lineList.forEach {
         corruptedMemory.add(Pair(it.split(",")[0].toInt(), it.split(",")[1].toInt()))
@@ -37,24 +37,28 @@ fun findNeighbors(grid: Grid, current: Vec2) : Map<Vec2, Long>{
     return DIRECTIONS.map { it + current }.filter { grid.inGrid(it) && grid.at(it) != WALL }.associateWith { 1L }
 }
 
-fun findShortestCost(grid: Grid, start: Vec2, end: Vec2) : Long{
-    val visited = mutableSetOf<Vec2>()
-    val queue = mutableListOf<Pair<Vec2, Long>>()
+fun findShortestCost(grid: Grid, start: Vec2, end: Vec2) : Int{
+    val distances = mutableMapOf<Vec2, Long>()
+    val queue = PriorityQueue<Vec2>(compareBy { t -> distances.getOrElse(t) { Long.MAX_VALUE } })
 
-    queue.add(Pair(start, 0))
+    distances[start] = 0
+    queue.add(start)
 
     while (queue.isNotEmpty()){
-        val (current, cost) = queue.removeAt(0)
+        val current = queue.poll()
 
         if (current == end){
-            return cost
+            return distances[current]!!.toInt()
         }
 
-        visited.add(current)
+        val neighbors = findNeighbors(grid, current)
 
-        findNeighbors(grid, current).forEach {
-            if (it.key !in visited){
-                queue.add(Pair(it.key, cost + it.value))
+        for (neighbor in neighbors.keys){
+            val newDistance = distances[current]!! + neighbors[neighbor]!!
+
+            if (newDistance < distances.getOrElse(neighbor) { Long.MAX_VALUE }){
+                distances[neighbor] = newDistance
+                queue.add(neighbor)
             }
         }
     }
