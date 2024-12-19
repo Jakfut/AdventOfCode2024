@@ -19,6 +19,17 @@ fun findCharInGrid(grid: List<List<Char>>, char: Char): Vec2 {
 
 fun Grid.toMutableGrid(): MutableGrid = this.map{ it.toMutableList() }.toMutableList()
 
+fun Grid.print() {
+    for (row in this) {
+        for (cell in row) {
+            print(cell)
+        }
+        println()
+    }
+}
+
+fun Grid.copy(): Grid = this.map{ it.toMutableList() }.toMutableList()
+
 fun toRadians(degrees: Double): Double = degrees * PI / 180.0
 
 data class Vec2(val col: Int, val row: Int) {
