@@ -12,7 +12,6 @@ fun main(){
     val towels:MutableList<String> = mutableListOf()
     val targets:MutableList<String> = mutableListOf()
     var isTowel = true
-    var score = 0
 
     lineList.forEach {
         if (it == "")
@@ -27,25 +26,30 @@ fun main(){
     //println(towels)
     //println(targets)
 
+    var possibleSolutions = 0L
     targets.forEach {
-        if (findSolutionV2(towels, "", it) != "")
-            score++
+        possibleSolutions += findSolutionV2(towels, "", it)
     }
 
-    println(score)
+    println(possibleSolutions)
 }
 
-fun findSolutionV2(towels:MutableList<String>, curString:String,  target: String) : String {
-    if (curString == target)
-        return curString
+fun findSolutionV2(towels:MutableList<String>, curString:String,  target: String, cache: MutableMap<String, Long> = mutableMapOf()) : Long {
+    if (curString == target) {
+        return 1
+    }
 
+    if (cache.containsKey(curString)) {
+        return cache[curString]!!
+    }
+
+    var count = 0L
     towels.forEach {
         if (target.startsWith(curString + it)) {
-            val result = findSolution(towels, curString + it, target)
-            if (result != "")
-                return result
+            count += findSolutionV2(towels, curString + it, target, cache)
         }
     }
 
-    return ""
+    cache[curString] = count
+    return count
 }
