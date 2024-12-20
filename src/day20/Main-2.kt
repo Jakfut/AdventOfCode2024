@@ -11,8 +11,7 @@ const val MAX_CHEAT_LENGTH = 20
 fun main(){
     val inputStream: InputStream = File("src/day20/example").inputStream()
     val lineList = mutableListOf<String>()
-    val cheats = mutableMapOf<Vec2, Int>()
-    var cheatCount = 0
+    var cheatCount = 0L
 
     inputStream.bufferedReader().forEachLine { lineList.add(it) }
 
@@ -20,7 +19,7 @@ fun main(){
 
     val distances = findShortestCostV2(grid, findCharInGrid(grid, 'S'), findCharInGrid(grid, 'E'))
 
-    println(distances.size)
+    //println(distances.size)
 
     /*findAllCheats(grid, distances, findCharInGrid(grid, 'S')).forEach { (k, v) ->
         println("$k: $v")
@@ -37,18 +36,15 @@ fun main(){
         }
     }*/
 
-    findAllCheats(grid, distances, findCharInGrid(grid, 'S')).forEach { (k, v) ->
-        if (v > cheats.getOrElse(findCharInGrid(grid, 'S')) { 0 })
-            cheats[k] = v
+    distances.forEach {
+        cheatCount += findAllCheats(grid, distances, it.key)
     }
-
-    cheatCount += cheats.values.sum()
 
     println(cheatCount)
 }
 
-fun findWallNeighbors(grid: Grid, current: Vec2) : Map<Vec2, Long>{
-    return DIRECTIONS.map { it + current }.filter { grid.inGrid(it) && grid.at(it) == WALL }.associateWith { 1L }
+fun findAllNeighbors(grid: Grid, current: Vec2) : Map<Vec2, Long>{
+    return DIRECTIONS.map { it + current }.associateWith { 1L }
 }
 
 fun findShortestCostV2(grid: Grid, start: Vec2, end: Vec2) : MutableMap<Vec2, Long> {
@@ -90,18 +86,18 @@ fun findCheats(grid: Grid, current: Vec2, oldPath: MutableMap<Vec2, Long>, curre
     return cheatPositions
 }
 
-fun findCheatsFromWallStart(grid: Grid, start: Vec2, wallStart: Vec2, oldPath: MutableMap<Vec2, Long>) : Int {
+fun findAllCheats(grid: Grid, oldPath: MutableMap<Vec2, Long>, start: Vec2) : Int{
     val cheatPositions = mutableSetOf<Vec2>()
     val distances = mutableMapOf<Vec2, Long>()
     val queue = PriorityQueue<Vec2>(compareBy { t -> distances.getOrElse(t) { Long.MAX_VALUE } })
 
-    queue.add(wallStart)
-    distances[wallStart] = 2L
-    cheatPositions += findCheats(grid, wallStart, oldPath, oldPath[start]!!, 2)
+    queue.addAll(findAllNeighbors(grid, start).keys)
+    distances.putAll(findAllNeighbors(grid, start).mapValues { 2L })
+    cheatPositions += findCheats(grid, start, oldPath, oldPath[start]!!, 2)
 
     while (queue.isNotEmpty()){
         val current = queue.poll()
-        val neighbors = findWallNeighbors(grid, current)
+        val neighbors = findAllNeighbors(grid, current)
 
         for (neighbor in neighbors.keys){
             val newDistance = distances[current]!! + neighbors[neighbor]!!
@@ -119,14 +115,4 @@ fun findCheatsFromWallStart(grid: Grid, start: Vec2, wallStart: Vec2, oldPath: M
     }
 
     return cheatPositions.size
-}
-
-fun findAllCheats(grid: Grid, oldPath: MutableMap<Vec2, Long>, start: Vec2) : MutableMap<Vec2, Int>{
-    val cheatsFromStart:MutableMap<Vec2, Int> = mutableMapOf()
-
-    findWallNeighbors(grid, start).forEach { (k, v) ->
-        cheatsFromStart[k] = findCheatsFromWallStart(grid, start, k, oldPath)
-    }
-
-    return cheatsFromStart
 }
