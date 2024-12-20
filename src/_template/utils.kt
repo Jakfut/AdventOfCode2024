@@ -59,6 +59,10 @@ data class Vec2(val col: Int, val row: Int) {
         return Vec2(this.col * scale, this.row * scale)
     }
 
+    fun distanceTo(v: Vec2): Int {
+        return abs(v.col - col) + abs(v.row - row)
+    }
+
     fun rotate(degrees: Double): Vec2 {
 
         val radians = toRadians(degrees)

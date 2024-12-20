@@ -5,9 +5,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.PriorityQueue
 
-const val MIN_CHEATING_VALUE = 76
-const val MAX_CHEAT_LENGTH = 20
-
 fun main(){
     val inputStream: InputStream = File("src/day20/example").inputStream()
     val lineList = mutableListOf<String>()
