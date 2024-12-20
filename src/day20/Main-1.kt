@@ -9,7 +9,7 @@ const val WALL = '#'
 val DIRECTIONS = listOf(Vec2.UP, Vec2.DOWN, Vec2.LEFT, Vec2.RIGHT)
 
 fun main(){
-    val inputStream: InputStream = File("src/day20/in").inputStream()
+    val inputStream: InputStream = File("src/day20/example").inputStream()
     val lineList = mutableListOf<String>()
 
     inputStream.bufferedReader().forEachLine { lineList.add(it) }
@@ -24,11 +24,11 @@ fun main(){
             if (grid[index][i] == '#'){
                 grid[index][i] = '.'
 
-                val deviation = baseCost -findShortestCost(grid, findCharInGrid(grid, 'S'), findCharInGrid(grid, 'E'))
+                val deviation = baseCost - findShortestCost(grid, findCharInGrid(grid, 'S'), findCharInGrid(grid, 'E'))
 
                 grid[index][i] = '#'
 
-                if (deviation >= 100){
+                if (deviation >= 2){
                     bigDeviation++
                 }
             }
