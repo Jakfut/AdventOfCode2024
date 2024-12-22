@@ -17,7 +17,7 @@ fun main(){
 
     val grid: MutableGrid = lineList.map { it.toCharArray().toList() }.toList().toMutableGrid()
 
-    val distances = findShortestCostV2(grid, findCharInGrid(grid, 'S'), Vec2(3, 3))
+    val distances = findShortestCostV2(grid, findCharInGrid(grid, 'S'), findCharInGrid(grid, 'E'))
     val distancesCopy = deepCopyDistances(distances)
 
     distances.forEach { t, u ->

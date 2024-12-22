@@ -17,6 +17,15 @@ fun findCharInGrid(grid: List<List<Char>>, char: Char): Vec2 {
     error("Couldn't find char '$char' in grid")
 }
 
+fun isCharInGrid(grid: List<List<Char>>, char: Char): Boolean {
+    for (row in grid) {
+        for (c in row) {
+            if (c == char) return true
+        }
+    }
+    return false
+}
+
 fun Grid.toMutableGrid(): MutableGrid = this.map{ it.toMutableList() }.toMutableList()
 
 fun Grid.print() {
